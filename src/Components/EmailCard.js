@@ -1,4 +1,4 @@
-const EmailCard = ({ email }) => {
+const EmailCard = ({ email, setSelectedEmail, selectedEmail }) => {
 
   function capitalizeFirstLetter(val) {
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
@@ -21,12 +21,10 @@ const EmailCard = ({ email }) => {
   }
 
   return (
-    <div className="flex border gap-6 bg-white border-borderColor px-6 py-2 w-full rounded-md">
-      <span className="bg-accent h-10 w-10 rounded-full text-center text-white">
-        <p className="text-xl font-semibold leading-10">
-          {email?.from?.name[0].toUpperCase() || ""}
-        </p>
-      </span>
+    <article key={email.id} onClick={() => setSelectedEmail(email)} className={`flex border gap-6 bg-white cursor-pointer ${selectedEmail?.id !== email.id ? "border-borderColor" : "border-accent"} px-6 py-2 w-full rounded-md`}>
+              <span className="bg-accent h-10 w-10 shrink-0 rounded-full text-center text-white leading-10 text-xl font-semibold">
+                  {email?.from?.name[0].toUpperCase() || ""}
+              </span>
 
       <div className="flex flex-col justify-between gap-3 text-textColor">
         <div className="flex flex-col gap-1">
@@ -41,11 +39,11 @@ const EmailCard = ({ email }) => {
           </p>
         </div>
         <div className="flex flex-col gap-1">
-          <p>{email?.short_description}</p>
+          <p>{selectedEmail?.id ? `${email?.short_description.slice(0,50)}...` : email?.short_description}</p>
           <p>{convertEpochToDateTime(email?.date)}</p>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 
