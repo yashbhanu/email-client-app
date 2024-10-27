@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFavorite, removeFavorite } from "../redux/reducer/filterReducer";
+import { convertEpochToDateTime } from "../helper";
 
 const EmailDetails = ({ selectedEmail }) => {
   const [selectedEmailDetails, setselectedEmailDetails] = useState(null);
@@ -53,7 +54,7 @@ const EmailDetails = ({ selectedEmail }) => {
                 </button>
             </div>
 
-            <p>26/02/2020</p>
+            <p>{convertEpochToDateTime(selectedEmail?.date)}</p>
             </div>
 
             <EmailBody body={selectedEmailDetails.body} />

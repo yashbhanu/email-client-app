@@ -3,13 +3,21 @@ import EmailCard from "./EmailCard";
 import Pagination from "./Pagination";
 import EmailListLoader from "./EmailListLoader";
 import EmailDetails from "./EmailDetails";
+import { useDispatch, useSelector } from "react-redux";
+import { capitalizeFirstLetter } from "../helper";
+import { setCurrentFilterBy } from "../redux/reducer/filterReducer";
 
 const EmailClient = () => {
+  const filters = ["unread", "read", "favorites"]
   const [emails, setEmails] = useState([]);
   const [selectedEmail, setselectedEmail] = useState(null);
   const [page, setpage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setloading] = useState(false);
+  const { favorites, currentFilter } = useSelector((state) => state.filters);
+  const [filterBy, setfilterBy] = useState(currentFilter || "")
+  const dispatch = useDispatch();
+
   const fetchEmail = async () => {
     try {
       setloading(true);
@@ -27,22 +35,60 @@ const EmailClient = () => {
     }
   };
 
+  const fetchFavEmails = async () => {
+    try {
+      setloading(true);
+      const res = await fetch(
+        `https://flipkart-email-mock.now.sh`
+      );
+      const emails = await res.json();
+      const filterFavs = (emails["list"] || []).filter((email) => favorites.includes(email.id))
+      setEmails(filterFavs)
+    } catch (error) {
+      setloading(false);
+      console.error(error?.message || "Something went wrong");
+    } finally {
+      setloading(false);
+    }
+  }
+
+  const setFilter = async (name) => {
+    setfilterBy(name);
+    setselectedEmail(null)
+    dispatch(setCurrentFilterBy(name))
+    if(name === "favorites" && filterBy !== 'favorites') {
+      await fetchFavEmails();
+    } else if(filterBy === 'favorites' && name !== 'favorites') {
+      fetchEmail()
+    }
+  }
+
   useEffect(() => {
-    fetchEmail();
+    if(filterBy === 'favorites') {
+      fetchFavEmails()
+    } else {
+      fetchEmail();
+    }
   }, [page]);
 
-  useEffect(() => {
-    console.log({ emails });
-  }, [emails]);
-
   return (
-    <section className="min-w-xl mx-auto px-24 py-8 bg-background">
-      <div className="flex gap-8 text-black text-lg">
+    <section className={`max-w-screen-2xl mx-auto px-24 py-8 ${!emails.length && 'h-[100vh]' }`}>
+      <div className="flex gap-8 text-black text-lg items-center">
         <p>Filter By:</p>
-        <div className="flex gap-12">
-          <button>Unread</button>
-          <button>Read</button>
-          <button>Favorites</button>
+        <div className="flex gap-8">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              className={`${
+                filterBy === filter
+                  ? "bg-filterBtn border border-borderColor rounded-full"
+                  : "border border-transparent"
+              } px-4 py-1 text-center`}
+              onClick={() => setFilter(filter)}
+            >
+              {capitalizeFirstLetter(filter)}
+            </button>
+          ))}
         </div>
       </div>
       {emails.length > 0 && !loading ? (
@@ -52,27 +98,29 @@ const EmailClient = () => {
               {emails.length > 0 &&
                 emails.map((email) => (
                   <EmailCard
+                    key={email.id}
                     email={email}
                     setSelectedEmail={setselectedEmail}
                     selectedEmail={selectedEmail}
+                    filterBy={filterBy}
                   />
                 ))}
             </div>
 
-            {selectedEmail && (
-                <EmailDetails selectedEmail={selectedEmail} />
-            )}
+            {selectedEmail && <EmailDetails selectedEmail={selectedEmail} />}
           </div>
 
-          <Pagination
-            totalCount={totalCount}
-            currentPage={page}
-            limit={10}
-            onPageChange={(val) => setpage(val)}
-          />
+          {filterBy !== "favorites" && (
+            <Pagination
+              totalCount={totalCount}
+              currentPage={page}
+              limit={10}
+              onPageChange={(val) => setpage(val)}
+            />
+          )}
         </>
       ) : !emails.length && !loading ? (
-        <div className="absolute top-1/2 left-1/2">
+        <div className="absolute top-1/2 left-1/2 mt-[-50px] ml-[-100px]">
           <span className="text-2xl font-semibold">No Data Found !!</span>
         </div>
       ) : (

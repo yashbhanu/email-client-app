@@ -5,6 +5,7 @@ export const filterSlice = createSlice({
   initialState: {
     read: [],
     favorites: [],
+    currentFilter : ""
   },
   reducers: {
     readEmail: (state, action) => {
@@ -16,10 +17,13 @@ export const filterSlice = createSlice({
     removeFavorite: (state, action) => {
       const fav = state.favorites.filter((id) => id !== action.payload)
       state.favorites = [...fav];
+    },
+    setCurrentFilterBy : (state, action) => {
+      state.currentFilter = action.payload
     }
   },
 });
 
-export const { readEmail, addFavorite, removeFavorite } = filterSlice.actions;
+export const { readEmail, addFavorite, removeFavorite, setCurrentFilterBy } = filterSlice.actions;
 
 export default filterSlice.reducer;

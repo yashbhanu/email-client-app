@@ -30,7 +30,7 @@ const Pagination = ({ currentPage, totalCount, limit, onPageChange }) => {
           className={`px-3 py-1 text-sm font-medium rounded-md ${
             page === currentPage
               ? 'bg-accent text-white'
-              : 'text-gray-700 hover:bg-gray-200'
+              : 'text-gray-700 hover:bg-borderColor'
           }`}
         >
           {page}
