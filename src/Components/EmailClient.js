@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EmailCard from "./EmailCard";
 import Pagination from "./Pagination";
-import EmailListLoader from "./EmailListLoader";
+import { ListLoader } from "./EmailListLoader";
 import EmailDetails from "./EmailDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { capitalizeFirstLetter } from "../helper";
@@ -45,7 +45,6 @@ const EmailClient = () => {
       const filterFavs = (emails["list"] || []).filter((email) => favorites.includes(email.id))
       setEmails(filterFavs)
     } catch (error) {
-      setloading(false);
       console.error(error?.message || "Something went wrong");
     } finally {
       setloading(false);
@@ -72,7 +71,7 @@ const EmailClient = () => {
   }, [page]);
 
   return (
-    <section className={`max-w-screen-2xl mx-auto px-24 py-8 ${!emails.length && 'h-[100vh]' }`}>
+    <section className={`max-w-screen-2xl mx-auto px-24 py-8`}>
       <div className="flex gap-8 text-black text-lg items-center">
         <p>Filter By:</p>
         <div className="flex gap-8">
@@ -124,7 +123,7 @@ const EmailClient = () => {
           <span className="text-2xl font-semibold">No Data Found !!</span>
         </div>
       ) : (
-        <EmailListLoader />
+        <ListLoader />
       )}
     </section>
   );
