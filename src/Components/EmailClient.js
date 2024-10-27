@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EmailCard from "./EmailCard";
 import Pagination from "./Pagination";
-import EmailListLoader from "./Loaders/EmailListLoader";
+import EmailListLoader from "./EmailListLoader";
 import EmailDetails from "./EmailDetails";
 
 const EmailClient = () => {

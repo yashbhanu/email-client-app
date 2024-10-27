@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../redux/reducer/filterReducer";
 
 const EmailDetails = ({ selectedEmail }) => {
   const [selectedEmailDetails, setselectedEmailDetails] = useState(null);
+  const dispatch = useDispatch();
+  const {favorites} = useSelector((state) => state.filters);
 
   const fetchEmailDetails = async () => {
     if (selectedEmail?.id) {
@@ -17,6 +21,14 @@ const EmailDetails = ({ selectedEmail }) => {
       }
     }
   };
+
+  const markAsFav = () => {
+    dispatch(addFavorite(selectedEmail.id))
+  }
+
+  const unmarkAsFav = () => {
+    dispatch(removeFavorite(selectedEmail.id))
+  }
 
   useEffect(() => {
     fetchEmailDetails();
@@ -36,8 +48,8 @@ const EmailDetails = ({ selectedEmail }) => {
                 <span className="text-3xl font-semibold">
                 {selectedEmail?.subject}
                 </span>
-                <button className="py-1 px-4 text-xs text-center text-white bg-accent rounded-full">
-                Mark as favorite
+                <button onClick={favorites.includes(selectedEmail.id) ? unmarkAsFav : markAsFav} className="py-1 px-4 text-xs text-center text-white bg-accent rounded-full">
+                  {favorites.includes(selectedEmail.id) ? 'Unmark as favorite' : 'Mark as favorite'}
                 </button>
             </div>
 
